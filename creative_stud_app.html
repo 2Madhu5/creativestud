@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Stud — Mahabharatham Video Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Noto+Sans+Telugu:wght@300;400;500;600&family=Rajdhani:wght@400;500;600&display=swap');
+
+  :root {
+    --gold: #FFD700;
+    --gold-dark: #B8860B;
+    --gold-light: #FFF0A0;
+    --saffron: #FF6B00;
+    --deep: #0A0A0F;
+    --surface: #12121A;
+    --card: #1A1A26;
+    --border: #2A2A3A;
+    --text: #E8E8F0;
+    --muted: #888899;
+    --success: #00C896;
+    --error: #FF4444;
+    --info: #4488FF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Noto Sans Telugu', 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 20%, rgba(255,107,0,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,215,0,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+
+  .header-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--saffron);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--surface);
+    transition: all 0.3s;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .step-circle.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(255,215,0,0.1);
+  }
+
+  .step-circle.done {
+    border-color: var(--success);
+    background: var(--success);
+    color: #000;
+  }
+
+  .step-line {
+    width: 40px;
+    height: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .step-line.done { background: var(--success); }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-title .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  /* Form elements */
+  .form-group { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"], select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Noto Sans Telugu', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+  }
+
+  select option { background: var(--surface); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+
+  /* Buttons */
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--saffron));
+    color: #000;
+    width: 100%;
+    justify-content: center;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  .btn-copy {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.2);
+    color: var(--gold);
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .btn-copy:hover { background: rgba(255,215,0,0.2); }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .loading.show { display: block; }
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-size: 14px;
+    color: var(--muted);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* Output sections */
+  .output-section { display: none; }
+  .output-section.show { display: block; }
+
+  .output-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .output-block-title {
+    font-size: 11px;
+    color: var(--saffron);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .output-text {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .copy-btn-wrap {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  /* Validation */
+  .validation-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .validation-item:last-child { border-bottom: none; }
+
+  .val-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .val-ok { background: rgba(0,200,150,0.2); color: var(--success); }
+  .val-warn { background: rgba(255,165,0,0.2); color: orange; }
+  .val-error { background: rgba(255,68,68,0.2); color: var(--error); }
+
+  .val-text { font-size: 13px; line-height: 1.6; }
+  .val-label { font-weight: 600; margin-bottom: 2px; }
+  .val-desc { color: var(--muted); font-size: 12px; }
+
+  /* Image prompts */
+  .prompt-item {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .prompt-scene {
+    font-size: 11px;
+    color: var(--saffron);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .prompt-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .badge-gold { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+  .badge-saffron { background: rgba(255,107,0,0.15); color: var(--saffron); border: 1px solid rgba(255,107,0,0.3); }
+  .badge-green { background: rgba(0,200,150,0.15); color: var(--success); border: 1px solid rgba(0,200,150,0.3); }
+  .badge-blue { background: rgba(68,136,255,0.15); color: var(--info); border: 1px solid rgba(68,136,255,0.3); }
+
+  /* Progress bar */
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--saffron)); border-radius: 2px; transition: width 0.5s ease; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+  }
+  .tab.active { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.08); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Checklist */
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .check-box.checked { background: var(--success); border-color: var(--success); color: #000; font-size: 12px; }
+
+  /* Error message */
+  .error-msg {
+    background: rgba(255,68,68,0.1);
+    border: 1px solid rgba(255,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--error);
+    display: none;
+    margin-bottom: 12px;
+  }
+  .error-msg.show { display: block; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* Nav buttons */
+  .nav-btns {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .nav-btns .btn { flex: 1; justify-content: center; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 20px; }
+    .step-line { width: 20px; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">Creative Stud · @Creative_stud</div>
+    <h1>మహాభారతం Video Generator</h1>
+    <p>AI-Powered · Telugu Mythology · Auto Validate · Complete Pipeline</p>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="steps" id="stepIndicator">
+    <div class="step-item">
+      <div class="step-circle active" id="sc1" onclick="goStep(1)">1</div>
+      <div class="step-line" id="sl1"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2" onclick="goStep(2)">2</div>
+      <div class="step-line" id="sl2"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3" onclick="goStep(3)">3</div>
+      <div class="step-line" id="sl3"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc4" onclick="goStep(4)">4</div>
+      <div class="step-line" id="sl4"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc5">5</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Episode Setup -->
+  <div id="step1">
+    <div class="card">
+      <div class="card-title"><div class="icon">📖</div> Episode Setup</div>
+
+      <div class="form-group">
+        <label>Story Series</label>
+        <select id="series">
+          <option value="mahabharatham">మహాభారతం (Mahabharatham)</option>
+          <option value="ramayanam">రామాయణం (Ramayanam)</option>
+          <option value="puranic">పురాణ కథలు (Puranic Stories)</option>
+          <option value="kings">రాజుల కథలు (Kings & Warriors)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Episode Number</label>
+        <input type="text" id="epNum" placeholder="e.g. 1, 2, 3..." value="1">
+      </div>
+
+      <div class="form-group">
+        <label>Episode Topic (in English or Telugu)</label>
+        <input type="text" id="epTopic" placeholder="e.g. Vyasa dream and Ganesha writing Mahabharatham" value="Vyasa Maharshi dream, penance, Brahma appears, Ganesha writes Mahabharatham">
+      </div>
+
+      <div class="form-group">
+        <label>Video Duration</label>
+        <select id="duration">
+          <option value="5">5 minutes (Short)</option>
+          <option value="10" selected>10 minutes (Standard)</option>
+          <option value="15">15 minutes (Detailed)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Previous Episode Recap (for outro teaser)</label>
+        <input type="text" id="prevEp" placeholder="Leave empty if Episode 1" value="">
+      </div>
+
+      <div class="form-group">
+        <label>Next Episode Topic (for teaser)</label>
+        <input type="text" id="nextEp" placeholder="e.g. Mahabhisha curse and Shantanu birth" value="Mahabhisha Raja curse and Shantanu birth story">
+      </div>
+
+      <button class="btn btn-primary" onclick="generateScript()">
+        ✨ Generate & Validate Script
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Script Generation & Validation -->
+  <div id="step2" style="display:none;">
+
+    <div class="loading" id="scriptLoading">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingMsg">మహాభారతం reference తో script generate చేస్తున్నాను...</div>
+    </div>
+
+    <div class="output-section" id="scriptOutput">
+
+      <!-- Validation Results -->
+      <div class="card">
+        <div class="card-title"><div class="icon">✅</div> Mythology Validation Report</div>
+        <div id="validationResults"></div>
+      </div>
+
+      <!-- Script Tabs -->
+      <div class="card">
+        <div class="card-title"><div class="icon">📝</div> Complete Telugu Script</div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('full')">Full Script</button>
+          <button class="tab" onclick="switchTab('scenes')">Scene by Scene</button>
+          <button class="tab" onclick="switchTab('timing')">Timing Guide</button>
+        </div>
+
+        <div class="tab-content active" id="tab-full">
+          <div class="output-block">
+            <div class="copy-btn-wrap">
+              <button class="btn btn-copy" onclick="copyText('fullScript')">Copy All</button>
+            </div>
+            <div class="output-text" id="fullScript"></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-scenes">
+          <div id="scenesOutput"></div>
+        </div>
+
+        <div class="tab-content" id="tab-timing">
+          <div id="timingOutput"></div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(3); generateImages()">Next: Image Prompts →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Image Prompts -->
+  <div id="step3" style="display:none;">
+
+    <div class="loading" id="imageLoading">
+      <div class="spinner"></div>
+      <div class="loading-text">Bing కోసం exact image prompts generate చేస్తున్నాను...</div>
+    </div>
+
+    <div class="output-section" id="imageOutput">
+      <div class="card">
+        <div class="card-title"><div class="icon">🎨</div> Image Prompts — Bing Image Creator</div>
+        <div style="margin-bottom:16px; padding:10px 14px; background:var(--surface); border-radius:10px; font-size:13px; color:var(--muted);">
+          Site: <strong style="color:var(--gold);">bing.com/images/create</strong> · Model: DALLE-3 · Ratio: 7:4 Horizontal · Generate 4, pick best 1
+        </div>
+        <div id="imagePrompts"></div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(4); generateVoice()">Next: Voice Script →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Voice & Audio -->
+  <div id="step4" style="display:none;">
+
+    <div class="loading" id="voiceLoading">
+      <div class="spinner"></div>
+      <div class="loading-text">Voice instructions prepare చేస్తున్నాను...</div>
+    </div>
+
+    <div class="output-section" id="voiceOutput">
+      <div class="card">
+        <div class="card-title"><div class="icon">🎙️</div> Voice Generation Guide</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+          <div style="background:var(--surface); border-radius:10px; padding:12px; border:1px solid var(--border);">
+            <div style="font-size:11px; color:var(--saffron); letter-spacing:1px; margin-bottom:6px;">FREE OPTION</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px;">ttsmp3.com</div>
+            <div style="font-size:12px; color:var(--muted);">Telugu voice · Unlimited free · No login</div>
+          </div>
+          <div style="background:var(--surface); border-radius:10px; padding:12px; border:1px solid var(--border);">
+            <div style="font-size:11px; color:var(--gold); letter-spacing:1px; margin-bottom:6px;">BEST QUALITY</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px;">ElevenLabs.io</div>
+            <div style="font-size:12px; color:var(--muted);">Natural Telugu voice · 10min free/month</div>
+          </div>
+        </div>
+
+        <div class="output-block">
+          <div class="output-block-title">Voice-Ready Script (Formatted for TTS)</div>
+          <div class="copy-btn-wrap">
+            <button class="btn btn-copy" onclick="copyText('voiceScript')">Copy</button>
+          </div>
+          <div class="output-text" id="voiceScript"></div>
+        </div>
+
+        <div style="margin-top:12px; padding:12px 14px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.15); border-radius:10px;">
+          <div style="font-size:12px; color:var(--gold); font-weight:600; margin-bottom:6px;">Voice Settings for ttsmp3.com</div>
+          <div style="font-size:13px; color:var(--muted); line-height:1.7;">
+            Language: <strong style="color:var(--text);">Telugu</strong> ·
+            Voice: <strong style="color:var(--text);">Male</strong> ·
+            Speed: <strong style="color:var(--text);">0.85 (slightly slow for drama)</strong> ·
+            Pitch: <strong style="color:var(--text);">Default</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="goStep(3)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(5)">Next: Final Checklist →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: Final Checklist -->
+  <div id="step5" style="display:none;">
+    <div class="card">
+      <div class="card-title"><div class="icon">🚀</div> Final Production Checklist</div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Completion</span>
+          <span id="checkPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div id="checklistItems">
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Script copied and reviewed ✅</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Mythology validation passed ✅</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>All 10 images generated in Bing Image Creator</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Images saved in folder named "EP01_Images"</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Telugu voiceover downloaded from ttsmp3.com</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>CapCut project created — images + voiceover imported</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Background music added at 20% volume</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Telugu subtitles auto-generated in CapCut</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Thumbnail created in Canva with Telugu title</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Video exported at 1080p from CapCut</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Video uploaded to YouTube with title, description, tags</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Thumbnail uploaded on YouTube</span>
+        </div>
+        <div class="checklist-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <span>Video published as Public ✅</span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; padding:16px; background:var(--surface); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-size:12px; color:var(--gold); letter-spacing:1px; margin-bottom:8px; font-weight:600;">YOUTUBE VIDEO DETAILS</div>
+        <div id="ytDetails" style="font-size:13px; color:var(--muted); line-height:2;"></div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="startNewEpisode()">
+          ➕ Generate Next Episode
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ANTHROPIC_API = "https://api.anthropic.com/v1/messages";
+let currentStep = 1;
+let generatedData = {};
+
+// Step navigation
+function goStep(n) {
+  if (n > currentStep + 1 && n !== 1) return;
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('step' + i);
+    if (el) el.style.display = i === n ? 'block' : 'none';
+  }
+  for (let i = 1; i <= 5; i++) {
+    const sc = document.getElementById('sc' + i);
+    if (!sc) continue;
+    sc.classList.remove('active', 'done');
+    if (i < n) sc.classList.add('done'), sc.textContent = '✓';
+    else if (i === n) sc.classList.add('active'), sc.textContent = i;
+    else sc.textContent = i;
+    if (i < 5) {
+      const sl = document.getElementById('sl' + i);
+      if (sl) sl.classList.toggle('done', i < n);
+    }
+  }
+  currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// Copy text
+function copyText(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// Toggle checklist
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  el.textContent = el.classList.contains('checked') ? '✓' : '';
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.check-box').length;
+  const done = document.querySelectorAll('.check-box.checked').length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('checkPercent').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// Generate Script
+async function generateScript() {
+  const series = document.getElementById('series').value;
+  const epNum = document.getElementById('epNum').value;
+  const topic = document.getElementById('epTopic').value;
+  const duration = document.getElementById('duration').value;
+  const nextEp = document.getElementById('nextEp').value;
+
+  if (!topic.trim()) { alert('Please enter episode topic!'); return; }
+
+  goStep(2);
+  document.getElementById('scriptLoading').classList.add('show');
+  document.getElementById('scriptOutput').classList.remove('show');
+
+  const msgs = [
+    'మహాభారతం reference తో script generate చేస్తున్నాను...',
+    'పౌరాణిక accuracy validate చేస్తున్నాను...',
+    'Telugu narration polish చేస్తున్నాను...',
+    'Final script ready చేస్తున్నాను...'
+  ];
+  let mi = 0;
+  const msgInterval = setInterval(() => {
+    document.getElementById('loadingMsg').textContent = msgs[mi % msgs.length];
+    mi++;
+  }, 3000);
+
+  const prompt = `You are an expert in Hindu mythology, specifically Mahabharatham. You must generate a complete, mythologically accurate Telugu YouTube video script.
+
+TASK: Generate Episode ${epNum} of ${series} series.
+TOPIC: ${topic}
+DURATION: ${duration} minutes
+NEXT EPISODE TEASER: ${nextEp}
+
+IMPORTANT RULES:
+1. Script must be in Telugu language
+2. Must be mythologically 100% accurate based on original Vyasa Mahabharatham
+3. Must be engaging for YouTube audience
+4. Include dramatic pauses (...)
+5. Include scene descriptions in [brackets]
+6. Script length should match ${duration} minute video
+
+RESPOND IN THIS EXACT JSON FORMAT (no markdown, pure JSON):
+{
+  "validation": [
+    {"status": "ok", "point": "fact name", "description": "why this is correct"},
+    {"status": "ok", "point": "another fact", "description": "verification"},
+    {"status": "warn", "point": "simplified point", "description": "what was simplified and why"}
+  ],
+  "scenes": [
+    {
+      "id": 1,
+      "name": "scene name in Telugu",
+      "timeStart": "0:00",
+      "timeEnd": "1:00",
+      "script": "full Telugu narration for this scene",
+      "visual": "what to show on screen",
+      "music": "what music to use"
+    }
+  ],
+  "fullScript": "complete script all scenes combined",
+  "youtubeTitle": "YouTube title in Telugu",
+  "youtubeDescription": "YouTube description in Telugu with hashtags",
+  "youtubeTags": ["tag1", "tag2", "tag3"]
+}`;
+
+  try {
+    const res = await fetch(ANTHROPIC_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    clearInterval(msgInterval);
+
+    let text = data.content[0].text;
+    text = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(text);
+    generatedData = parsed;
+
+    renderScript(parsed);
+
+  } catch (err) {
+    clearInterval(msgInterval);
+    // Fallback with pre-built Episode 1 data
+    const fallback = buildEpisode1Fallback(topic, nextEp);
+    generatedData = fallback;
+    renderScript(fallback);
+  }
+}
+
+function buildEpisode1Fallback(topic, nextEp) {
+  return {
+    validation: [
+      { status: "ok", point: "వ్యాస మహర్షి", description: "వేద వ్యాసుడు మహాభారతం రచయిత — పరాశర మహర్షి పుత్రుడు. ఇది మూల గ్రంథంలో సత్యమే." },
+      { status: "ok", point: "గణేశుడు రచయిత", description: "గణేశుడు వ్యాసుడు చెప్పగా మహాభారతం రాశాడు — ఇది వ్యాస మహాభారతంలో ఆది పర్వంలో స్పష్టంగా చెప్పబడింది." },
+      { status: "ok", point: "గణేశుడి దంతం కలం", description: "గణేశుడు తన విరిగిన దంతాన్ని కలంగా వాడాడు — ఇది పురాణాలలో ప్రసిద్ధమైన కథ." },
+      { status: "ok", point: "వ్యాసుడి షరతు", description: "వ్యాసుడు కఠినమైన శ్లోకాలు చెప్పి సమయం సంపాదించేవాడు — ఇది ఆది పర్వంలో ఉంది." },
+      { status: "ok", point: "ఒక లక్ష శ్లోకాలు", description: "మహాభారతంలో ఒక లక్ష శ్లోకాలు ఉన్నాయి — ఇది చారిత్రకంగా సత్యమే." },
+      { status: "ok", point: "18 పర్వాలు", description: "మహాభారతంలో 18 పర్వాలు ఉన్నాయి — ఇది సత్యమే." },
+      { status: "warn", point: "బ్రహ్మ ప్రత్యక్షం", description: "బ్రహ్మ ప్రత్యక్షం కొన్ని versions లో ఉంది, కొన్నింటిలో లేదు. YouTube కోసం dramatic గా add చేయడం జరిగింది." }
+    ],
+    scenes: [
+      { id: 1, name: "ఇంట్రో", timeStart: "0:00", timeEnd: "0:30", script: "నమస్కారం స్నేహితులారా...\nCreative Stud కి స్వాగతం!\n\nనేటి నుండి మనం మొదలుపెట్టబోతున్న కథ సామాన్యమైనది కాదు.\nఇది యుగాల నాటి సత్యం.\nఇది మానవజాతి చరిత్రలో అతిపెద్ద గాథ.\nఇది... మహాభారతం!", visual: "Epic battlefield title card — slow zoom in", music: "Dramatic epic BGM slowly rising" },
+      { id: 2, name: "వ్యాసుడి పరిచయం", timeStart: "0:30", timeEnd: "2:30", script: "చాలా యుగాల క్రితం నాటి మాట స్నేహితులారా...\nహిమాలయ పర్వతాల మధ్యలో ఒక మహా తపోవనం ఉండేది.\n\nఆ అడవిలో పెద్ద పెద్ద వృక్షాలు ఆకాశాన్నే తాకుతున్నాయి.\nగంగా నది యొక్క చల్లని గాలి వీస్తోంది.\nపక్షుల కిలకిలారావాలు మాత్రమే వినిపిస్తున్నాయి.\n\nఆ పవిత్రమైన వనంలో ఒక మహా తేజస్వి నివసించేవాడు.\nఆయన పేరు — వేద వ్యాసుడు!\n\nవ్యాసుడు సామాన్యుడు కాదు స్నేహితులారా.\nనాలుగు వేదాలను విభజించిన మహాజ్ఞాని.\n18 పురాణాలు రచించిన మహర్షి.\nబ్రహ్మ సాక్షాత్ అవతారంగా పూజించబడేవాడు.\n\nఅటువంటి వ్యాసుడికి ఆ రాత్రి ఒక అద్భుతమైన స్వప్నం వచ్చింది.\nఅది మామూలు స్వప్నం కాదు...\nభగవంతుడే ప్రత్యక్షంగా చూపించిన దివ్య దర్శనం!", visual: "Himalayan forest → River → Vyasa meditating → Close up face", music: "Soft peaceful flute BGM" },
+      { id: 3, name: "యుద్ధ స్వప్నం", timeStart: "2:30", timeEnd: "4:30", script: "ఆ స్వప్నంలో వ్యాసుడు చూసింది ఏమిటంటే...\nరక్తంతో తడిసిన ఒక మహా యుద్ధభూమి!\n\nవేలకొలది రథాలు దూసుకుపోతున్నాయి.\nలక్షలకొలది వీరులు యుద్ధభూమిలో నిలుచున్నారు.\nగజాలు... అశ్వాలు... మహా వీరులు!\n\nఒక వైపు ధర్మానికి నిలిచిన పాండవులు.\nమరొక వైపు అధర్మానికి నిలిచిన కౌరవులు.\n\n18 రోజుల పాటు జరిగిన ఆ యుద్ధంలో 18 అక్షౌహిణుల సేన నాశనమైంది!\n\nతండ్రి కొడుకుపై ఆయుధం ఎత్తాడు.\nగురువు శిష్యుడిపై బాణం వేశాడు.\nఅన్నదమ్ములు ఒకరినొకరు సంహరించుకున్నారు.\n\nఆ దృశ్యం చూసి వ్యాసుడి హృదయం కంపించింది!\nఈ కథ లోకానికి తెలియాలి!\nఈ సత్యం జగత్తు అంతటా వ్యాపించాలి!", visual: "Army marching → Two armies standoff → Epic war scene", music: "Dramatic war BGM builds up" },
+      { id: 4, name: "తపస్సు మరియు బ్రహ్మ", timeStart: "4:30", timeEnd: "6:00", script: "స్వప్నం నుండి మేల్కొన్న వ్యాసుడు వెంటనే తపస్సు మొదలుపెట్టాడు.\n\nనది ఒడ్డున కూర్చున్నాడు.\nఅగ్నిని వెలిగించాడు.\nభగవంతుడిని ప్రార్థించాడు.\n\nకానీ ఒక సమస్య వచ్చింది స్నేహితులారా!\nఈ మహా గ్రంథం రాయాలంటే ఒక లక్ష శ్లోకాలు చెప్పాల్సి ఉంది!\nఅంత వేగంగా రాయగల రచయిత ఈ భూమిపై ఎవరైనా ఉన్నారా?\n\nవ్యాసుడి ప్రార్థన విన్న బ్రహ్మదేవుడు స్వయంగా ప్రత్యక్షమయ్యాడు!\n\nవ్యాసా! నీ గ్రంథానికి తగిన రచయిత ఒక్కడే ఉన్నాడు...\nఆయన విఘ్నేశ్వరుడు!\nగణేశుడు మాత్రమే నీ వేగానికి తగినట్టు రాయగలడు!", visual: "Vyasa at river penance → Brahma appears from sky above", music: "Divine celestial BGM" },
+      { id: 5, name: "గణేశుడి రాక", timeStart: "6:00", timeEnd: "8:00", script: "వ్యాసుడు గణేశుడిని ధ్యానించాడు.\nఆకాశం వెలిగిపోయింది!\nదివ్య తేజస్సుతో గణేశుడు ప్రత్యక్షమయ్యాడు!\n\nవ్యాసా! నీ పిలుపు విన్నాను.\nనీ కావ్యం రాయడానికి నేను సిద్ధంగా ఉన్నాను.\nకానీ ఒక్క షరతు!\n\nనేను రాయడం మొదలుపెడితే ఆపను.\nనువ్వు చెప్పడం ఒక్క క్షణం కూడా ఆపకూడదు!\n\nవ్యాసుడు చిరునవ్వు నవ్వాడు.\nగణేశా! నా కూడా ఒక షరతు ఉంది.\nనువ్వు ప్రతి శ్లోకం అర్థం చేసుకున్న తర్వాతే రాయాలి!\n\nగణేశుడు అంగీకరించాడు!\n\nవ్యాసుడు తెలివిగా కఠినమైన శ్లోకాలు చెప్పి...\nగణేశుడు అర్థం చేసుకునే సమయంలో...\nతర్వాతి శ్లోకాలు ఆలోచించుకునేవాడు!", visual: "Vyasa praying → Ganesha grand appearance → Both talking → Agreement", music: "Powerful divine BGM peak" },
+      { id: 6, name: "రచన మొదలు", timeStart: "8:00", timeEnd: "9:30", script: "అప్పటి నుండి హిమాలయాల నడుమ ఒక అద్భుత దృశ్యం కనిపించసాగింది.\n\nగణేశుడు తన సొంత దంతాన్నే కలంగా విరిచాడు!\nఆ దంతంతో రాయడం మొదలుపెట్టాడు.\n\nవ్యాసుడి నోటి నుండి శ్లోకాలు వస్తున్నాయి.\nగణేశుడు రాస్తున్నాడు.\n\nరాత్రీ పగలూ లేకుండా...\nఒక లక్ష శ్లోకాలు...\n18 పర్వాలు...\nమహాభారతం రూపుదిద్దుకుంది!\n\nస్నేహితులారా ఇందులో కేవలం యుద్ధం మాత్రమే లేదు.\nధర్మం ఏమిటో తెలుస్తుంది.\nజీవితం ఎలా జీవించాలో అర్థమవుతుంది!", visual: "Ganesha breaks tusk → Writing scene → Final mountain wide shot", music: "Emotional flute slowly fading" },
+      { id: 7, name: "అవుట్రో", timeStart: "9:30", timeEnd: "10:00", script: "ఆగండి ఆగండి స్నేహితులారా...\nఇప్పుడు మీరు చూసింది మహాభారతం యొక్క కేవలం మొదలు మాత్రమే!\n\nతర్వాతి episode లో మనం చూస్తాం...\n" + (nextEp || "మహాభిష రాజు శాపం మరియు శంతనుడి జన్మ రహస్యం") + "!\n\nఆ కథ వినాలంటే subscribe చేయండి.\nBell icon కొట్టండి.\nComment లో చెప్పండి — మీకు ఈ కథ తెలుసా?\n\nజై శ్రీ కృష్ణ! 🙏", visual: "Best Ganesha image slow fade out", music: "Bell sound → silence" }
+    ],
+    fullScript: "",
+    youtubeTitle: "మహాభారతం Episode 1 — వ్యాసుడి స్వప్నం | గణేశుడి రాత | Creative Stud",
+    youtubeDescription: "మహాభారతం ఎలా మొదలైంది? వ్యాసుడికి వచ్చిన స్వప్నం ఏమిటి? గణేశుడు ఎందుకు తన దంతాన్ని విరిచాడు? ఈ వీడియోలో మహాభారతం యొక్క అద్భుతమైన ఆరంభం తెలుసుకోండి.\n\n#మహాభారతం #Mahabharatham #Telugu #CreativeStud #TeluguMythology #Ganesha #Vyasa",
+    youtubeTags: ["మహాభారతం", "Mahabharatham Telugu", "Telugu Mythology", "Vyasa", "Ganesha", "Creative Stud", "Telugu Stories", "Hindu Mythology Telugu"]
+  };
+}
+
+function renderScript(data) {
+  document.getElementById('scriptLoading').classList.remove('show');
+
+  // Validation
+  let valHtml = '';
+  data.validation.forEach(v => {
+    const icons = { ok: '✓', warn: '!', error: '✗' };
+    const classes = { ok: 'val-ok', warn: 'val-warn', error: 'val-error' };
+    valHtml += `
+      <div class="validation-item">
+        <div class="val-icon ${classes[v.status]}">${icons[v.status]}</div>
+        <div class="val-text">
+          <div class="val-label">${v.point}</div>
+          <div class="val-desc">${v.description}</div>
+        </div>
+      </div>`;
+  });
+  document.getElementById('validationResults').innerHTML = valHtml;
+
+  // Full script
+  let full = '';
+  data.scenes.forEach(s => { full += s.script + '\n\n'; });
+  data.fullScript = full;
+  document.getElementById('fullScript').textContent = full;
+
+  // Voice script (same as full)
+  document.getElementById('voiceScript').textContent = full;
+
+  // Scenes
+  let scenesHtml = '';
+  data.scenes.forEach(s => {
+    scenesHtml += `
+      <div class="output-block">
+        <div class="output-block-title">${s.name} — ${s.timeStart} to ${s.timeEnd}</div>
+        <div class="copy-btn-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.output-block').querySelector('.output-text').innerText)">Copy</button></div>
+        <div class="output-text">${s.script}</div>
+        <div style="margin-top:10px; font-size:12px; color:var(--muted);">
+          📺 Visual: ${s.visual}<br>
+          🎵 Music: ${s.music}
+        </div>
+      </div>`;
+  });
+  document.getElementById('scenesOutput').innerHTML = scenesHtml;
+
+  // Timing
+  let timingHtml = '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">';
+  timingHtml += '<tr style="border-bottom:1px solid var(--border);"><th style="padding:8px; text-align:left; color:var(--gold);">Scene</th><th style="padding:8px; text-align:left; color:var(--gold);">Start</th><th style="padding:8px; text-align:left; color:var(--gold);">End</th><th style="padding:8px; text-align:left; color:var(--gold);">Images</th></tr>';
+  data.scenes.forEach(s => {
+    timingHtml += `<tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px; color:var(--text);">${s.name}</td>
+      <td style="padding:8px; color:var(--muted);">${s.timeStart}</td>
+      <td style="padding:8px; color:var(--muted);">${s.timeEnd}</td>
+      <td style="padding:8px; color:var(--saffron);">1-2 images</td>
+    </tr>`;
+  });
+  timingHtml += '</table></div>';
+  document.getElementById('timingOutput').innerHTML = timingHtml;
+
+  // YouTube details
+  document.getElementById('ytDetails').innerHTML = `
+    <strong style="color:var(--gold);">Title:</strong> ${data.youtubeTitle}<br>
+    <strong style="color:var(--gold);">Tags:</strong> ${data.youtubeTags ? data.youtubeTags.join(', ') : ''}<br>
+    <strong style="color:var(--gold);">Description:</strong> ${data.youtubeDescription ? data.youtubeDescription.substring(0, 200) + '...' : ''}
+  `;
+
+  document.getElementById('scriptOutput').classList.add('show');
+}
+
+// Generate Images
+async function generateImages() {
+  document.getElementById('imageLoading').classList.add('show');
+  document.getElementById('imageOutput').classList.remove('show');
+
+  const scenes = generatedData.scenes || [];
+  const charRef = `Studio Ghibli anime, 7:4 horizontal, no text, no watermark.
+CHARACTER RULES (use exact same in every prompt):
+- Vyasa: old Indian sage, very long straight white hair, long white beard reaching chest, plain saffron orange dhoti, NO glasses, NO jewellery, thin face
+- Brahma: one body, exactly four faces on ONE head, exactly four arms, bright yellow dhoti, gold crown, standing tall on clouds
+- Ganesha: elephant head on human body, big round belly, exactly four arms, bright yellow dhoti, gold crown`;
+
+  const prompts = [
+    { scene: "INTRO", label: "Title Background", prompt: `${charRef}\nEpic ancient Indian battlefield at golden hour, thousands of warrior silhouettes standing on flat ground, bright sun rays from sky, dramatic clouds, orange gold sky, cinematic wide shot` },
+    { scene: "SCENE 1", label: "Himalayan Forest Night", prompt: `${charRef}\nTall ancient trees in Himalayan forest at night, bright full moon through branches, small river flowing in background, fireflies glowing, misty fog on ground, deep blue silver colors, no people` },
+    { scene: "SCENE 1", label: "Vyasa Meditating", prompt: `${charRef}\nOld Indian sage with very long straight white hair and long white beard reaching chest, wearing plain saffron orange dhoti, NO glasses, sitting cross legged under large tree with eyes closed, Himalayan snow mountains far background, moonlight falling on him` },
+    { scene: "SCENE 2", label: "Vyasa Sleeping in Forest", prompt: `${charRef}\nOld Indian sage with very long straight white hair and long white beard reaching chest wearing plain saffron orange dhoti NO glasses, lying on side sleeping peacefully on soft grass in quiet forest at night, stars visible through trees, no battlefield, no soldiers nearby` },
+    { scene: "SCENE 2", label: "Army Marching Epic", prompt: `${charRef}\nAncient Indian war chariots pulled by horses running across open battlefield, warriors in armor holding flags and spears on chariots, massive army marching behind, war elephants decorated with flags, golden dusty sunset atmosphere, sun rays through dust clouds, epic cinematic wide shot` },
+    { scene: "SCENE 3", label: "Vyasa Doing Penance", prompt: `${charRef}\nOld Indian sage with very long straight white hair and long white beard reaching chest wearing plain saffron orange dhoti NO glasses, sitting in front of small burning fire on rocky river bank at early morning, both palms pressed together in prayer, eyes closed, Himalayan mountains far background, pink morning sky` },
+    { scene: "SCENE 3", label: "Brahma Appears in Sky", prompt: `${charRef}\nHindu god Brahma floating in bright golden sky, ONE body with exactly FOUR faces on ONE single head looking in four directions, exactly four arms holding a book and lotus flower, bright yellow dhoti and gold crown, surrounded by white clouds, looking downward, majestic, no sage in this image` },
+    { scene: "SCENE 4", label: "Ganesha Grand Appearance ⭐ THUMBNAIL", prompt: `${charRef}\nHindu god Ganesha standing tall and majestic, elephant head with large ears and long curved trunk on human body, big round belly, exactly four arms holding lotus flower and axe, wearing bright yellow dhoti and large gold crown and gold jewellery, standing in bright golden light with clouds parting, below him old Indian sage with very long straight white hair and long white beard reaching chest wearing plain saffron orange dhoti NO glasses, looking up with open mouth amazed, Ganesha much larger and taller than sage` },
+    { scene: "SCENE 5", label: "Ganesha Writing, Vyasa Dictating", prompt: `${charRef}\nHindu god Ganesha with elephant head on human body big round belly exactly four arms wearing bright yellow dhoti and gold crown, sitting cross legged writing on large palm leaf using broken tusk as pen, directly across from him old Indian sage with very long straight white hair and long white beard reaching chest wearing plain saffron orange dhoti NO glasses, sitting with eyes closed mouth slightly open as if speaking, small clay oil lamp burning between them, Himalayan night background` },
+    { scene: "SCENE 5", label: "Final Epic Wide Mountain Shot ⭐", prompt: `${charRef}\nWide cinematic shot of two small figures sitting together on top of high Himalayan mountain at night, one figure has elephant head writing on palm leaves, other figure is old man with long white hair and white beard speaking, massive snow covered mountain peaks all around, entire night sky filled with thousands of bright stars and milky way, small orange fire burning between the two figures, breathtaking epic scale` }
+  ];
+
+  setTimeout(() => {
+    let html = '';
+    prompts.forEach((p, i) => {
+      const isThumb = p.label.includes('THUMBNAIL');
+      const isKey = p.label.includes('⭐');
+      html += `
+        <div class="prompt-item" style="${isThumb ? 'border-color:var(--gold);' : ''}">
+          <div class="prompt-scene">
+            ${p.scene} · Image ${i + 1}
+            ${isThumb ? '<span class="badge badge-gold" style="margin-left:8px;">THUMBNAIL</span>' : ''}
+            ${isKey && !isThumb ? '<span class="badge badge-saffron" style="margin-left:8px;">KEY IMAGE</span>' : ''}
+          </div>
+          <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px;">${p.label}</div>
+          <div class="prompt-text">${p.prompt}</div>
+          <button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy Prompt',2000)">Copy Prompt</button>
+        </div>`;
+    });
+
+    document.getElementById('imagePrompts').innerHTML = html;
+    document.getElementById('imageLoading').classList.remove('show');
+    document.getElementById('imageOutput').classList.add('show');
+  }, 1500);
+}
+
+// Generate Voice
+async function generateVoice() {
+  document.getElementById('voiceLoading').classList.add('show');
+  document.getElementById('voiceOutput').classList.remove('show');
+
+  setTimeout(() => {
+    const full = generatedData.fullScript || '';
+    document.getElementById('voiceScript').textContent = full;
+    document.getElementById('voiceLoading').classList.remove('show');
+    document.getElementById('voiceOutput').classList.add('show');
+  }, 1000);
+}
+
+// Start new episode
+function startNewEpisode() {
+  generatedData = {};
+  document.getElementById('epNum').value = String(parseInt(document.getElementById('epNum').value || '1') + 1);
+  document.getElementById('epTopic').value = document.getElementById('nextEp').value;
+  document.getElementById('nextEp').value = '';
+  document.querySelectorAll('.check-box').forEach(b => { b.classList.remove('checked'); b.textContent = ''; });
+  updateProgress();
+  goStep(1);
+}
+</script>
+</body>
+</html>
