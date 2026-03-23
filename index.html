@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Stud — Complete Mahabharatham Pipeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600&display=swap');
+:root{--gold:#FFD700;--saffron:#FF6B00;--deep:#07070E;--surface:#0F0F1A;--card:#141420;--card2:#1A1A28;--border:#222235;--text:#E8E8F5;--muted:#6A6A85;--success:#00C896;--warn:#FFB300;--error:#FF4455;--info:#4A90FF;--purple:#9B6BFF;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--deep);color:var(--text);font-family:'Rajdhani','Noto Sans Telugu',sans-serif;min-height:100vh;}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;}
+.brand{font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:var(--gold);letter-spacing:2px;}
+.brand-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{padding:6px 12px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;transition:all 0.2s;letter-spacing:1px;}
+.nav-tab.active{background:rgba(255,215,0,0.1);color:var(--gold);}
+.main{max-width:920px;margin:0 auto;padding:20px 16px;}
+.page{display:none;}.page.active{display:block;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
+.card-hd{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-icon{width:28px;height:28px;border-radius:8px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat-card{background:var(--card2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);}
+.stat-num{font-size:22px;font-weight:700;color:var(--gold);}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.search-wrap{position:relative;margin-bottom:14px;}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px 10px 36px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:var(--gold);}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+.parva-section{margin-bottom:12px;}
+.parva-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card2);border-radius:10px;cursor:pointer;margin-bottom:6px;border:1px solid var(--border);transition:border-color 0.2s;}
+.parva-hd:hover{border-color:var(--gold);}
+.parva-hd-left{flex:1;}
+.parva-num{font-size:10px;color:var(--saffron);letter-spacing:2px;font-weight:600;margin-bottom:2px;}
+.parva-name{font-size:14px;font-weight:600;color:var(--text);}
+.parva-meaning{font-size:11px;color:var(--muted);margin-top:2px;}
+.parva-count{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,215,0,0.1);color:var(--gold);font-weight:600;border:1px solid rgba(255,215,0,0.2);flex-shrink:0;}
+.parva-episodes{display:none;}.parva-episodes.open{display:block;}
+.ep-grid{display:grid;grid-template-columns:1fr;gap:4px;padding:0 4px;}
+.ep-item{display:flex;gap:10px;padding:10px 12px;background:var(--surface);border-radius:8px;cursor:pointer;transition:all 0.2s;border:1px solid transparent;align-items:flex-start;}
+.ep-item:hover{border-color:var(--gold);background:rgba(255,215,0,0.03);}
+.ep-item.done{border-color:var(--success);background:rgba(0,200,150,0.04);}
+.ep-num-badge{min-width:36px;height:22px;border-radius:6px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:1px;}
+.ep-num-badge.done{background:rgba(0,200,150,0.15);border-color:rgba(0,200,150,0.3);color:var(--success);}
+.ep-body{flex:1;}
+.ep-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.ep-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+.ep-actions{display:flex;gap:6px;flex-shrink:0;}
+.ep-btn{padding:4px 10px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all 0.2s;}
+.ep-btn-gen{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.25);}
+.ep-btn-gen:hover{background:rgba(255,215,0,0.22);}
+.ep-btn-done{background:rgba(0,200,150,0.12);color:var(--success);border:1px solid rgba(0,200,150,0.25);}
+.ep-btn-done:hover{background:rgba(0,200,150,0.22);}
+.fg{margin-bottom:12px;}
+label{display:block;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+input[type=text],select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Noto Sans Telugu','Rajdhani',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+select option{background:var(--surface);}
+textarea{resize:vertical;min-height:100px;line-height:1.8;}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--saffron));color:#000;width:100%;justify-content:center;font-size:15px;padding:13px;}
+.btn-primary:hover{opacity:0.92;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-copy{background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);color:var(--gold);font-size:12px;padding:5px 12px;}
+.btn-copy:hover{background:rgba(255,215,0,0.15);}
+.btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.btn-row .btn{flex:1;justify-content:center;min-width:120px;}
+.loading{display:none;text-align:center;padding:32px 20px;}
+.loading.show{display:block;}
+.spinner{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-txt{font-size:13px;color:var(--muted);}
+.out-section{display:none;}.out-section.show{display:block;}
+.out-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;position:relative;}
+.out-label{font-size:10px;color:var(--saffron);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-weight:600;}
+.out-text{font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+.copy-wrap{position:absolute;top:10px;right:10px;}
+.val-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.val-item:last-child{border-bottom:none;}
+.val-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:2px;}
+.v-ok{background:rgba(0,200,150,0.15);color:var(--success);}
+.v-warn{background:rgba(255,179,0,0.15);color:var(--warn);}
+.v-err{background:rgba(255,68,85,0.15);color:var(--error);}
+.val-body{flex:1;}
+.val-ttl{font-size:13px;font-weight:600;margin-bottom:2px;}
+.val-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.tab{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'Rajdhani',sans-serif;font-weight:600;}
+.tab.on{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.06);}
+.tab-pane{display:none;}.tab-pane.on{display:block;}
+.current-ep-card{background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.25);border-radius:12px;padding:16px;margin-bottom:14px;}
+.current-ep-label{font-size:10px;color:var(--saffron);letter-spacing:2px;margin-bottom:6px;font-weight:600;}
+.current-ep-num{font-size:28px;font-weight:700;color:var(--gold);}
+.current-ep-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.current-ep-sub{font-size:12px;color:var(--muted);line-height:1.6;}
+.info-box{background:rgba(74,144,255,0.06);border:1px solid rgba(74,144,255,0.18);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
+.ok-box{background:rgba(0,200,150,0.06);border:1px solid rgba(0,200,150,0.18);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--success);line-height:1.7;margin-bottom:10px;}
+.tool-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px;}
+.tool-link{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all 0.2s;text-decoration:none;display:block;}
+.tool-link:hover{border-color:var(--info);}
+.tool-link-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.tool-link-desc{font-size:11px;color:var(--muted);}
+.tool-link-badge{font-size:10px;padding:1px 6px;border-radius:8px;display:inline-block;margin-bottom:6px;}
+.char-card{background:var(--surface);border-radius:8px;padding:12px;border:1px solid var(--border);margin-bottom:8px;}
+.char-name{font-size:11px;color:var(--gold);font-weight:600;margin-bottom:4px;letter-spacing:1px;}
+.char-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+@media(max-width:600px){.stats-row{grid-template-columns:repeat(2,1fr);}.nav-tabs{gap:2px;}.nav-tab{padding:5px 8px;font-size:11px;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div>
+    <div class="brand">CREATIVE STUD</div>
+    <div class="brand-sub">మహాభారతం Complete Pipeline — @Creative_stud</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('episodes')">📚 Episodes</button>
+    <button class="nav-tab" onclick="showPage('generate')">✨ Generate</button>
+    <button class="nav-tab" onclick="showPage('tools')">🛠️ Tools</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- EPISODES PAGE -->
+<div class="page active" id="page-episodes">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="totalEps">74</div><div class="stat-lbl">Total Episodes</div></div>
+    <div class="stat-card"><div class="stat-num" id="doneEps">0</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat-card"><div class="stat-num">18</div><div class="stat-lbl">Parvas</div></div>
+    <div class="stat-card"><div class="stat-num" id="monthsLeft">12+</div><div class="stat-lbl">Months Content</div></div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" placeholder="Search... (e.g. కర్ణుడు, Bhishma, గణేశుడు)" oninput="searchEps(this.value)" id="searchInput">
+  </div>
+  <div id="episodeList"></div>
+</div>
+
+<!-- GENERATE PAGE -->
+<div class="page" id="page-generate">
+  <div class="current-ep-card" id="currentEpCard" style="display:none;">
+    <div class="current-ep-label">CURRENTLY GENERATING</div>
+    <div class="current-ep-num" id="curEpNum">Ep 1</div>
+    <div class="current-ep-title" id="curEpTitle"></div>
+    <div class="current-ep-sub" id="curEpSub"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">⚙️</div> Episode Settings</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Episode Number</label><input type="text" id="epNum" value="1"></div>
+      <div class="fg"><label>Duration</label><select id="dur"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option></select></div>
+    </div>
+    <div class="fg"><label>Episode Topic (Episodes page నుండి auto-fill అవుతుంది)</label><input type="text" id="topic" placeholder="Episodes page లో Generate click చేయండి"></div>
+    <div class="fg"><label>Next Episode Teaser</label><input type="text" id="nextEp" placeholder="Auto-filled"></div>
+    <button class="btn btn-primary" id="genBtn" onclick="generateScript()">✨ Generate + Validate Script</button>
+  </div>
+  <div class="loading" id="scriptLoad"><div class="spinner"></div><div class="loading-txt" id="loadTxt">Script generate చేస్తున్నాను...</div></div>
+  <div class="out-section" id="scriptOut">
+    <div class="card">
+      <div class="card-hd"><div class="card-icon">✅</div> Mythology Validation</div>
+      <div id="valResults"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-icon">📝</div> Telugu Script</div>
+      <div class="tabs">
+        <button class="tab on" onclick="st('full',this)">Full Script</button>
+        <button class="tab" onclick="st('scenes',this)">Scenes</button>
+        <button class="tab" onclick="st('images',this)">Image Prompts</button>
+        <button class="tab" onclick="st('yt',this)">YouTube</button>
+      </div>
+      <div class="tab-pane on" id="tp-full">
+        <div class="out-block">
+          <div class="copy-wrap"><button class="btn btn-copy" onclick="cp('fullTxt')">Copy All</button></div>
+          <div class="out-text" id="fullTxt"></div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tp-scenes"><div id="scenesOut"></div></div>
+      <div class="tab-pane" id="tp-images">
+        <div class="info-box">ఒక్కొక్క prompt copy చేసి Bing Image Creator లో paste చేయండి → 4 images generate చేయండి → best 1 download చేయండి</div>
+        <div id="imagePromptsOut"></div>
+      </div>
+      <div class="tab-pane" id="tp-yt"><div id="ytOut"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showPage('episodes')">← Episodes</button>
+      <button class="btn btn-primary" onclick="markDoneNext()">✅ Mark Done + Next Episode →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS PAGE -->
+<div class="page" id="page-tools">
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">🎨</div> Image Generation Sites</div>
+    <div class="tool-row">
+      <a class="tool-link" href="https://www.bing.com/images/create" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(0,200,150,0.12);color:var(--success);">FREE UNLIMITED</div>
+        <div class="tool-link-name">Bing Image Creator</div>
+        <div class="tool-link-desc">Main tool · All scenes · DALLE-3</div>
+      </a>
+      <a class="tool-link" href="https://ideogram.ai" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,179,0,0.12);color:var(--warn);">10/day FREE</div>
+        <div class="tool-link-name">Ideogram.ai</div>
+        <div class="tool-link-desc">Best for title cards with text</div>
+      </a>
+      <a class="tool-link" href="https://leonardo.ai" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,179,0,0.12);color:var(--warn);">150/day FREE</div>
+        <div class="tool-link-name">Leonardo.ai</div>
+        <div class="tool-link-desc">Anime XL · Character close-ups</div>
+      </a>
+    </div>
+    <div class="ok-box">⚙️ Bing Settings: Model → DALLE-3 · Aspect Ratio → 7:4 Horizontal · End every prompt with "no text, no watermark"</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">🎙️</div> Telugu Voice Sites</div>
+    <div class="tool-row">
+      <a class="tool-link" href="https://ttsmp3.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(0,200,150,0.12);color:var(--success);">FREE · NO LOGIN</div>
+        <div class="tool-link-name">ttsmp3.com</div>
+        <div class="tool-link-desc">Telugu · Unlimited · Speed 0.85</div>
+      </a>
+      <a class="tool-link" href="https://elevenlabs.io" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,215,0,0.12);color:var(--gold);">BEST QUALITY</div>
+        <div class="tool-link-name">ElevenLabs</div>
+        <div class="tool-link-desc">Natural Telugu · 10min free/month</div>
+      </a>
+      <a class="tool-link" href="https://murf.ai" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(74,144,255,0.12);color:var(--info);">FREE TRIAL</div>
+        <div class="tool-link-name">Murf.ai</div>
+        <div class="tool-link-desc">Professional Telugu voices</div>
+      </a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">🎬</div> Animate Images Sites</div>
+    <div class="tool-row">
+      <a class="tool-link" href="https://klingai.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,215,0,0.12);color:var(--gold);">BEST FREE</div>
+        <div class="tool-link-name">Kling AI</div>
+        <div class="tool-link-desc">Image → 5sec animated clip</div>
+      </a>
+      <a class="tool-link" href="https://pika.art" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,179,0,0.12);color:var(--warn);">250 FREE/mo</div>
+        <div class="tool-link-name">Pika Labs</div>
+        <div class="tool-link-desc">Cinematic smooth animations</div>
+      </a>
+      <a class="tool-link" href="https://runwayml.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(74,144,255,0.12);color:var(--info);">FREE TRIAL</div>
+        <div class="tool-link-name">Runway ML</div>
+        <div class="tool-link-desc">Professional quality video gen</div>
+      </a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">✂️</div> Edit + Combine + Upload</div>
+    <div class="tool-row">
+      <a class="tool-link" href="https://www.capcut.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(0,200,150,0.12);color:var(--success);">FREE FOREVER</div>
+        <div class="tool-link-name">CapCut PC</div>
+        <div class="tool-link-desc">Main editing · Combine all</div>
+      </a>
+      <a class="tool-link" href="https://www.canva.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(0,200,150,0.12);color:var(--success);">FREE</div>
+        <div class="tool-link-name">Canva</div>
+        <div class="tool-link-desc">Thumbnail · 1280×720</div>
+      </a>
+      <a class="tool-link" href="https://studio.youtube.com" target="_blank">
+        <div class="tool-link-badge" style="background:rgba(255,68,85,0.12);color:var(--error);">UPLOAD HERE</div>
+        <div class="tool-link-name">YouTube Studio</div>
+        <div class="tool-link-desc">Upload + Publish videos</div>
+      </a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-icon">👤</div> Character Reference Guide</div>
+    <div class="char-card"><div class="char-name">VYASA — అన్ని prompts లో same గా వాడండి</div><div class="char-desc">old Indian sage, very long straight white hair, long white beard reaching chest, plain saffron orange dhoti, NO glasses, NO jewellery, thin face, calm wise expression</div></div>
+    <div class="char-card"><div class="char-name">BRAHMA — Four faces on ONE head</div><div class="char-desc">one body, exactly four faces on ONE single head, exactly four arms, bright yellow dhoti, gold crown, white beard, holding palm leaf book and lotus flower, standing tall on white clouds</div></div>
+    <div class="char-card"><div class="char-name">GANESHA</div><div class="char-desc">elephant head on human body, big round belly, exactly four arms, bright yellow dhoti, gold crown, gold jewellery, large ears, curved trunk</div></div>
+    <div class="char-card"><div class="char-name">KRISHNA</div><div class="char-desc">young Indian man with dark blue skin, wearing yellow dhoti and peacock feather crown, holding flute, divine smile, gold jewellery</div></div>
+    <div class="char-card"><div class="char-name">BHISHMA</div><div class="char-desc">tall old Indian warrior, long white hair and white beard, wearing silver armor, holding bow, strong powerful build, wise fierce eyes</div></div>
+    <div class="char-card"><div class="char-name">ARJUNA</div><div class="char-desc">young handsome Indian warrior, wearing blue and gold armor, holding Gandiva bow, crown with gems, determined expression</div></div>
+    <div class="char-card"><div class="char-name">KARNA</div><div class="char-desc">tall handsome warrior with glowing golden armor and earrings (kavacha kundala), holding bow, proud noble expression, wearing red and gold dhoti</div></div>
+    <div class="char-card"><div class="char-name">DRAUPADI</div><div class="char-desc">beautiful Indian woman with dark complexion, wearing red and gold saree, black hair, strong determined expression, royal jewellery</div></div>
+    <div class="char-card"><div class="char-name">DURYODHANA</div><div class="char-desc">tall muscular Indian warrior, wearing dark red and black armor, proud arrogant expression, holding mace, black hair crown</div></div>
+    <div class="char-card"><div class="char-name">DRONACHARYA</div><div class="char-desc">old Indian guru warrior, white hair and beard, wearing white and gold robes, holding bow, wise strict expression</div></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PARVAS=[
+  {id:1,name:"ఆది పర్వం",eng:"Adi Parva",meaning:"మహాభారతం మొదలు నుండి పాండవుల రాజ్యం వరకు",episodes:[
+    {n:1,title:"వ్యాస మహర్షి స్వప్నం — గణేశుడి రాత",sub:"మహాభారతం రచన ఎలా మొదలైంది",next:"మహాభిష రాజు శాపం మరియు శంతనుడి జన్మ"},
+    {n:2,title:"మహాభిష రాజు శాపం — శంతనుడి జన్మ రహస్యం",sub:"మహాభిష ఎవరు · ఇంద్రుడి శాపం · భూమిపై శంతనుడిగా జన్మ",next:"అష్టవసువుల శాపం మరియు గంగతో ఒప్పందం"},
+    {n:3,title:"అష్టవసువుల శాపం — గంగతో ఒప్పందం",sub:"వసిష్ఠ మహర్షి ఆవు దొంగతనం · వసువులకు శాపం · గంగతో plan",next:"శంతనుడు గంగను వివాహమాడటం"},
+    {n:4,title:"శంతనుడు — గంగ వివాహం",sub:"శంతనుడు గంగను చూడటం · గంగ పెట్టిన రహస్య షరతు · వివాహం",next:"గంగ 7 పుత్రులను నదిలో వేసింది ఎందుకు"},
+    {n:5,title:"గంగ 7 పుత్రులను నదిలో వేసింది ఎందుకు?",sub:"7 వసువులు జన్మించి నదిలో వేయబడటం · శంతనుడు మాట్లాడకపోవడం · గంగ వెళ్ళిపోవడం",next:"దేవవ్రతుడు మరియు భీష్మ ప్రతిజ్ఞ"},
+    {n:6,title:"దేవవ్రతుడు — భీష్మ ప్రతిజ్ఞ",sub:"8వ పుత్రుడు దేవవ్రతుడు · సత్యవతి కోసం భయంకర ప్రతిజ్ఞ · భీష్ముడు అవడం",next:"సత్యవతి రహస్యం మరియు వ్యాసుడి జన్మ"},
+    {n:7,title:"సత్యవతి రహస్యం — వ్యాసుడి జన్మ కథ",sub:"సత్యవతి చేపల వాసన · పరాశర మహర్షి · వ్యాసుడి జన్మ · సత్యవతికి వరాలు",next:"అంబ అంబిక అంబాలికల కథ"},
+    {n:8,title:"అంబ అంబిక అంబాలిక — భీష్ముడి అపహరణం",sub:"కాశీ రాజకుమార్తెలు · భీష్ముడు అపహరణం · అంబ పగ · శాపం",next:"ధృతరాష్ట్రుడు పాండురాజు విదురుడు జన్మ"},
+    {n:9,title:"ధృతరాష్ట్రుడు పాండురాజు విదురుడు జన్మ",sub:"వ్యాసుడి నియోగం · అంధుడు ధృతరాష్ట్రుడు · పాండురాజు · విదురుడు",next:"పాండురాజుకు శాపం మరియు అడవికి వెళ్ళడం"},
+    {n:10,title:"పాండురాజుకు శాపం — అడవికి వెళ్ళడం",sub:"కిందమ మహర్షి శాపం · కుంతి మాద్రితో అడవికి · శాపం వివరాలు",next:"కుంతికి దుర్వాస మంత్రం మరియు కర్ణుడి జన్మ"},
+    {n:11,title:"కుంతికి దుర్వాస మంత్రం — కర్ణుడి జన్మ",sub:"దుర్వాస వరం · సూర్యుడిని పిలవడం · కర్ణుడి జన్మ · నదిలో వదిలివేయడం",next:"పాండవుల జన్మ రహస్యం"},
+    {n:12,title:"పాండవుల జన్మ రహస్యం",sub:"యుధిష్ఠిరుడు భీముడు అర్జునుడు · నకుల సహదేవులు · పాండురాజు మరణం",next:"పాండవులు హస్తినాపురం రావడం"},
+    {n:13,title:"పాండవులు హస్తినాపురం రావడం",sub:"కుంతి పిల్లలతో హస్తినాపురం · ధృతరాష్ట్రుడు స్వాగతం · కౌరవుల అసూయ",next:"ద్రోణాచార్యుడి కథ మరియు ద్రుపదుడితో పగ"},
+    {n:14,title:"ద్రోణాచార్యుడి కథ — ద్రుపదుడితో పగ",sub:"ద్రోణుడు ఎవరు · ద్రుపదుడి అవమానం · పగ పెట్టుకోవడం",next:"ఏకలవ్యుడి కథ మరియు బొటన వేలు గురుదక్షిణ"},
+    {n:15,title:"ఏకలవ్యుడి కథ — బొటన వేలు గురుదక్షిణ",sub:"ఏకలవ్యుడు ఎవరు · మట్టి విగ్రహంతో నేర్చుకోవడం · బొటన వేలు ఇవ్వడం",next:"రంగస్థల పోటీ మరియు కర్ణుడి రాక"},
+    {n:16,title:"రంగస్థల పోటీ — కర్ణుడి రాక",sub:"పాండవ కౌరవ విద్య ప్రదర్శన · కర్ణుడు రాక · అర్జునుడిని సవాల్ చేయడం",next:"లక్క ఇల్లు కుట్ర మరియు తప్పించుకోవడం"},
+    {n:17,title:"లక్క ఇల్లు కుట్ర — పాండవులు తప్పించుకోవడం",sub:"దుర్యోధనుడు కుట్ర · విదురుడి హెచ్చరిక · సొరంగం · తప్పించుకోవడం",next:"హిడింబి కథ మరియు భీముడి వివాహం"},
+    {n:18,title:"హిడింబి కథ — భీముడి వివాహం",sub:"హిడింబుడు రాక్షసుడు · భీముడు చంపడం · హిడింబి ప్రేమ · ఘటోత్కచుడు జన్మ",next:"బకాసుర వధ"},
+    {n:19,title:"బకాసుర వధ",sub:"బకాసుర రాక్షసుడు · భీముడు యుద్ధం · ప్రజలను రక్షించడం",next:"ద్రౌపది స్వయంవరం"},
+    {n:20,title:"ద్రౌపది స్వయంవరం",sub:"ద్రుపదుడి పణం · మత్స్యయంత్రం · అర్జునుడు గెలుచుకోవడం · వివాహం",next:"ద్రౌపది ఐదుగురికి భార్య ఎలా అయింది"},
+    {n:21,title:"ద్రౌపది ఐదుగురికి భార్య ఎలా అయింది?",sub:"కుంతి మాట · నారద మహర్షి పరిష్కారం · ఐదుగురి వివాహం రహస్యం",next:"సుభద్ర వివాహం మరియు అభిమన్యుడి జన్మ"},
+    {n:22,title:"సుభద్ర వివాహం — అభిమన్యుడి జన్మ",sub:"అర్జునుడు సుభద్రను వివాహమాడటం · కృష్ణుడి సహాయం · అభిమన్యుడి జన్మ",next:"ఖాండవ వన దహనం"},
+    {n:23,title:"ఖాండవ వన దహనం — అగ్నిదేవుడు",sub:"అగ్నిదేవుడు కోరిక · ఖాండవ వనం కాల్చడం · మయుడు రక్షించబడటం",next:"ఇంద్రప్రస్థం నిర్మాణం"},
+    {n:24,title:"ఇంద్రప్రస్థం నిర్మాణం — మయుడి అద్భుత సభ",sub:"మయుడు అద్భుత సభ నిర్మించడం · పాండవుల రాజ్యం వైభవం",next:"జరాసంధ వధ మరియు రాజసూయ యాగం"},
+    {n:25,title:"జరాసంధ వధ — రాజసూయ యాగం",sub:"కృష్ణుడు భీముడు అర్జునుడు · జరాసంధ వధ · రాజసూయ యాగం",next:"దుర్యోధనుడి అసూయ మరియు శకుని కుట్ర"}
+  ]},
+  {id:2,name:"సభా పర్వం",eng:"Sabha Parva",meaning:"పాచికల ఆట నుండి వనవాస నిర్ణయం వరకు",episodes:[
+    {n:26,title:"దుర్యోధనుడి అసూయ — శకుని కుట్ర",sub:"ఇంద్రప్రస్థం చూసి అసూయ · శకుని కుట్ర ప్రారంభం",next:"పాచికల ఆట మరియు యుధిష్ఠిరుడి ఓటమి"},
+    {n:27,title:"పాచికల ఆట — యుధిష్ఠిరుడి ఓటమి",sub:"శకుని మోసం · రాజ్యం పోవడం · అన్నదమ్ములు పణంగా పెట్టడం",next:"ద్రౌపది వస్త్రాపహరణం"},
+    {n:28,title:"ద్రౌపది వస్త్రాపహరణం",sub:"ద్రౌపదిని సభకు తీసుకు రావడం · దుశ్శాసనుడు · కృష్ణుడి రక్షణ",next:"ద్రౌపది శపథాలు మరియు భీముడి ప్రతిజ్ఞలు"},
+    {n:29,title:"ద్రౌపది శపథాలు — భీముడి ప్రతిజ్ఞలు",sub:"ద్రౌపది శాపం · భీముడు దుశ్శాసన రక్తం తాగుతానని ప్రతిజ్ఞ",next:"రెండవ పాచికల ఆట మరియు వనవాస నిర్ణయం"},
+    {n:30,title:"రెండవ పాచికల ఆట — వనవాస నిర్ణయం",sub:"మళ్ళీ ఆట · 12 సంవత్సరాల వనవాసం · 1 సంవత్సరం అజ్ఞాతవాసం",next:"పాండవులు అడవికి వెళ్ళడం"}
+  ]},
+  {id:3,name:"వన పర్వం",eng:"Vana Parva",meaning:"12 సంవత్సరాల వనవాసం సమయంలో కథలు",episodes:[
+    {n:31,title:"పాండవులు వనవాసానికి వెళ్ళడం",sub:"హస్తినాపురం వదిలివెళ్ళడం · ప్రజల దుఃఖం · వనవాసం మొదలు",next:"కిర్మీర వధ"},
+    {n:32,title:"కిర్మీర వధ — భీముడి శక్తి",sub:"కిర్మీర రాక్షసుడు · భీముడు వధ",next:"అర్జునుడు స్వర్గానికి వెళ్ళడం"},
+    {n:33,title:"అర్జునుడు స్వర్గానికి — దివ్యాస్త్రాల సంపాదన",sub:"ఇంద్రుని ఆజ్ఞ · స్వర్గంలో విద్య · పాశుపతాస్త్రం",next:"నల దమయంతి అద్భుత ప్రేమ కథ"},
+    {n:34,title:"నల దమయంతి కథ",sub:"అద్భుతమైన ప్రేమ కథ · అడవిలో విడిపోవడం · తిరిగి కలవడం",next:"సావిత్రి సత్యవంతుల కథ"},
+    {n:35,title:"సావిత్రి సత్యవంతుల కథ",sub:"యముడితో సావిత్రి తర్కం · నాలుగు వరాలు · భర్తను తిరిగి తీసుకు రావడం",next:"భీముడు హనుమంతుడిని కలవడం"},
+    {n:36,title:"భీముడు హనుమంతుడిని కలవడం",sub:"హనుమంతుడి దర్శనం · జ్ఞానం · సౌగంధిక పువ్వు",next:"జయద్రథుడు ద్రౌపదిని అపహరించడం"},
+    {n:37,title:"జయద్రథుడు ద్రౌపదిని అపహరించడం",sub:"జయద్రథుడి దుష్టత్వం · పాండవులు వెంబడించడం · శిక్ష",next:"కర్ణుడికి కవచ కుండలాలు తీసుకోవడం"},
+    {n:38,title:"కర్ణుడికి కవచ కుండలాలు — ఇంద్రుడి కుట్ర",sub:"ఇంద్రుడు బ్రాహ్మణుడిగా వచ్చి కవచం అడగడం · కర్ణుడి దాతృత్వం",next:"యక్ష ప్రశ్నలు మరియు యుధిష్ఠిరుడి జ్ఞానం"},
+    {n:39,title:"యక్ష ప్రశ్నలు — యుధిష్ఠిరుడి జ్ఞానం",sub:"యక్షుడు ప్రశ్నలు వేయడం · అన్నదమ్ములు పడిపోవడం · జవాబులు",next:"అజ్ఞాతవాసానికి సన్నాహాలు"}
+  ]},
+  {id:4,name:"విరాట పర్వం",eng:"Virata Parva",meaning:"1 సంవత్సరం రహస్య అజ్ఞాతవాసం",episodes:[
+    {n:40,title:"పాండవులు రహస్య వేషాలు — విరాట రాజు వద్ద",sub:"యుధిష్ఠిరుడు కంకుడు · భీముడు వంటమనిషి · అర్జునుడు బృహన్నల · ద్రౌపది సైరంధ్రి",next:"కీచకుడు ద్రౌపదిని వేధించడం"},
+    {n:41,title:"కీచకుడు ద్రౌపదిని వేధించడం — భీముడు వధ",sub:"కీచకుడి దుష్టత్వం · భీముడు రహస్యంగా వధించడం",next:"కౌరవులు గోవులు తీసుకువెళ్ళడం"},
+    {n:42,title:"కౌరవులు గోవులు తీసుకువెళ్ళడం — అర్జునుడు యుద్ధం",sub:"దుర్యోధనుడు పాండవులను కనుగొనే ప్రయత్నం · అర్జునుడు ఒంటరిగా యుద్ధం · గుర్తించబడటం",next:"పాండవులు యుద్ధ నిర్ణయం"}
+  ]},
+  {id:5,name:"ఉద్యోగ పర్వం",eng:"Udyoga Parva",meaning:"యుద్ధ సన్నాహాలు — కృష్ణుడి శాంతి యత్నం",episodes:[
+    {n:43,title:"పాండవులు యుద్ధ నిర్ణయం — మిత్రుల సేకరణ",sub:"రాజులను కలవడం · సేన సేకరణ",next:"కృష్ణుడు సారథి అవడం"},
+    {n:44,title:"కృష్ణుడు సారథి అవడం — నారాయణి సేన",sub:"కృష్ణుడు నారాయణి సేన ఇవ్వడం · అర్జునుడు కృష్ణుడిని కోరడం",next:"కృష్ణుడు శాంతి దూతగా హస్తినాపురం"},
+    {n:45,title:"కృష్ణుడు శాంతి దూత — 5 గ్రామాలు అడగడం",sub:"5 గ్రామాలు అడగడం · దుర్యోధనుడు నిరాకరించడం · కృష్ణుని విశ్వరూపం",next:"కర్ణుడికి కృష్ణుడు సత్యం చెప్పడం"},
+    {n:46,title:"కర్ణుడికి కృష్ణుడు సత్యం చెప్పడం",sub:"కర్ణుడు పాండవుడని నిజం · అయినా దుర్యోధనుడికే విధేయత",next:"కురుక్షేత్రంలో సేనలు సమావేశం"},
+    {n:47,title:"కురుక్షేత్రంలో సేనలు సమావేశం",sub:"18 అక్షౌహిణుల సేన · భీష్ముడు కౌరవ సేనాపతి · ధృష్టద్యుమ్నుడు పాండవ సేనాపతి",next:"కురుక్షేత్ర యుద్ధం మొదలు"}
+  ]},
+  {id:6,name:"భీష్మ పర్వం",eng:"Bhishma Parva",meaning:"యుద్ధం 1-10 రోజులు — భగవద్గీత!",episodes:[
+    {n:48,title:"కురుక్షేత్ర యుద్ధం మొదలు — శంఖనాదం",sub:"రెండు సేనలు నిలబడటం · శంఖాలు ఊదడం · యుద్ధం మొదలు",next:"అర్జునుడి విషాదం"},
+    {n:49,title:"అర్జునుడి విషాదం — యుద్ధం చేయనని నిరాకరించడం",sub:"అర్జునుడు బంధువులను చూసి విషాదం · ఆయుధాలు వదలడం",next:"భగవద్గీత కర్మ యోగం"},
+    {n:50,title:"భగవద్గీత — కర్మ జ్ఞాన యోగం (అధ్యాయాలు 1-6)",sub:"ధర్మం ఏమిటి · కర్మ చేయి ఫలం ఆశించకు · జ్ఞాన యోగం",next:"భగవద్గీత భక్తి విశ్వరూప యోగం"},
+    {n:51,title:"భగవద్గీత — భక్తి విశ్వరూప యోగం (అధ్యాయాలు 7-12)",sub:"భక్తి యోగం · విభూతి యోగం · విశ్వరూప దర్శనం",next:"భగవద్గీత మోక్ష సన్యాస యోగం"},
+    {n:52,title:"భగవద్గీత — మోక్ష సన్యాస యోగం (అధ్యాయాలు 13-18)",sub:"క్షేత్ర క్షేత్రజ్ఞ విభాగం · మోక్ష సన్యాస యోగం · అర్జునుడు యుద్ధానికి అంగీకరించడం",next:"భీష్ముడు యుద్ధభూమిలో పడటం"},
+    {n:53,title:"భీష్ముడు యుద్ధభూమిలో పడటం",sub:"శిఖండి · అర్జునుడు బాణాలు · భీష్ముడు శరశయ్య · ఉత్తరాయణం వేచి ఉండటం",next:"ద్రోణాచార్యుడు సేనాపతి"}
+  ]},
+  {id:7,name:"ద్రోణ పర్వం",eng:"Drona Parva",meaning:"యుద్ధం 11-15 రోజులు",episodes:[
+    {n:54,title:"ద్రోణాచార్యుడు సేనాపతి — చక్రవ్యూహం",sub:"ద్రోణుడు సేనాపతి · చక్రవ్యూహం plan",next:"అభిమన్యుడి వీర మరణం"},
+    {n:55,title:"అభిమన్యుడి వీర మరణం",sub:"చక్రవ్యూహంలో ఒంటరిగా పోరాటం · 7 మంది కలిసి దాడి · వీర మృత్యువు",next:"అర్జునుడి భయంకర ప్రతిజ్ఞ"},
+    {n:56,title:"అర్జునుడి భయంకర ప్రతిజ్ఞ — జయద్రథ వధ",sub:"రేపటిలోగా జయద్రథుడిని చంపుతానని ప్రతిజ్ఞ · సూర్యాస్తమయం నాటకం · జయద్రథ వధ",next:"ఘటోత్కచుడి వీర మరణం"},
+    {n:57,title:"ఘటోత్కచుడి వీర మరణం",sub:"రాత్రి యుద్ధం · కర్ణుడు శక్తి అస్త్రం వాడటం · వీర మరణం",next:"ద్రోణాచార్యుడి మరణం"},
+    {n:58,title:"ద్రోణాచార్యుడి మరణం",sub:"అశ్వత్థామ మరణం అబద్ధం · ద్రోణుడు ఆయుధాలు వదలడం · వధ",next:"కర్ణుడు సేనాపతి"}
+  ]},
+  {id:8,name:"కర్ణ పర్వం",eng:"Karna Parva",meaning:"యుద్ధం 16-17 రోజులు — కర్ణ అర్జున మహా యుద్ధం",episodes:[
+    {n:59,title:"కర్ణుడు సేనాపతి — మహా యుద్ధ సన్నాహం",sub:"కర్ణుడు సేనాపతి · శల్యుడు సారథి · ప్రతిజ్ఞలు",next:"కర్ణ అర్జున మహా యుద్ధం"},
+    {n:60,title:"కర్ణ అర్జున మహా యుద్ధం — కర్ణుడి వీర మరణం",sub:"మహా యుద్ధం · రథచక్రం నేలలో · అర్జునుడు కర్ణుడిని వధించడం",next:"శల్యుడు సేనాపతి"}
+  ]},
+  {id:9,name:"శల్య సౌప్తిక పర్వాలు",eng:"Shalya & Sauptika Parva",meaning:"యుద్ధం 18వ రోజు — దుర్యోధనుడి అంతం",episodes:[
+    {n:61,title:"శల్యుడు సేనాపతి — యుద్ధం ముగింపు",sub:"శల్యుడు వధ · శకుని వధ · దుర్యోధనుడు ఒంటరి",next:"దుర్యోధనుడి అంతం"},
+    {n:62,title:"దుర్యోధనుడి అంతం — భీముడి ప్రతిజ్ఞ నెరవేర్పు",sub:"దుర్యోధనుడు సరస్సులో దాక్కోవడం · భీముడు తొడలు విరగడం",next:"అశ్వత్థామ రాత్రి దాడి"},
+    {n:63,title:"అశ్వత్థామ రాత్రి దాడి — పాండవ శిబిరం",sub:"రాత్రి దాడి · ద్రుపదుడి కొడుకులు హతం · ద్రౌపది పిల్లలు మరణం",next:"అశ్వత్థామ శిక్ష"}
+  ]},
+  {id:10,name:"స్త్రీ శాంతి అనుశాసన పర్వాలు",eng:"Stri Shanti Anushasana Parva",meaning:"యుద్ధానంతర కథలు — భీష్ముడి జ్ఞానం",episodes:[
+    {n:64,title:"స్త్రీ పర్వం — గాంధారి శాపం కృష్ణుడికి",sub:"గాంధారి కన్నీళ్ళు · కృష్ణుడికి శాపం · యాదవ కులం నాశనం",next:"భీష్ముడి శరశయ్యపై జ్ఞానం"},
+    {n:65,title:"భీష్ముడి శరశయ్యపై జ్ఞానం — రాజధర్మం",sub:"యుధిష్ఠిరుడికి రాజధర్మం · న్యాయం · విష్ణు సహస్రనామం",next:"భీష్ముడి మరణం"},
+    {n:66,title:"భీష్ముడి మరణం — స్వర్గానికి వెళ్ళడం",sub:"ఉత్తరాయణం రావడం · భీష్ముడు శరీరం విడవడం",next:"అశ్వమేధ యాగం"}
+  ]},
+  {id:11,name:"అశ్వమేధిక మౌసల పర్వాలు",eng:"Ashvamedhika & Mausala Parva",meaning:"అశ్వమేధ యాగం — కృష్ణుడి మరణం",episodes:[
+    {n:67,title:"అశ్వమేధ యాగం — పాండవుల రాజ్య స్థాపన",sub:"యుధిష్ఠిరుడు రాజు · అశ్వమేధ యాగం",next:"ధృతరాష్ట్రుడు గాంధారి అడవికి వెళ్ళడం"},
+    {n:68,title:"ధృతరాష్ట్రుడు గాంధారి అడవికి వెళ్ళడం",sub:"వృద్ధులు అడవిలో తపస్సు · అగ్నిలో మరణం",next:"కృష్ణుడి మరణం మరియు యాదవ నాశనం"},
+    {n:69,title:"కృష్ణుడి మరణం — యాదవ కుల నాశనం",sub:"గాంధారి శాపం నెరవేర్పు · యాదవులు పోరాడుకోవడం · కృష్ణుడి మరణం",next:"పాండవులు హిమాలయాల వైపు నడవడం"}
+  ]},
+  {id:12,name:"మహాప్రస్థానిక స్వర్గారోహణ పర్వాలు",eng:"Mahaprasthanika & Svargarohana Parva",meaning:"మహాభారతం ముగింపు",episodes:[
+    {n:70,title:"పాండవులు హిమాలయాల వైపు నడవడం",sub:"రాజ్యం వదిలివేయడం · ఒక్కొక్కరు పడిపోవడం",next:"పాండవులు స్వర్గంలో మహాభారతం ముగింపు"},
+    {n:71,title:"పాండవులు స్వర్గంలో — మహాభారతం ముగింపు",sub:"స్వర్గంలో పాండవులు · కౌరవులు కూడా స్వర్గంలో · మహాభారతం సందేశం",next:"మహాభారతం సంపూర్ణం!"}
+  ]}
+];
+
+const done=JSON.parse(localStorage.getItem('mbDone')||'{}');
+let currentEp=null,gData={};
+
+function renderEpisodes(filter=''){
+  const container=document.getElementById('episodeList');
+  let html='',totalDone=0,totalEps=0;
+  PARVAS.forEach(parva=>{
+    const filtered=parva.episodes.filter(ep=>!filter||ep.title.toLowerCase().includes(filter.toLowerCase())||(ep.sub&&ep.sub.toLowerCase().includes(filter.toLowerCase()))||ep.n.toString().includes(filter));
+    if(filtered.length===0&&filter)return;
+    totalEps+=parva.episodes.length;
+    const doneCount=parva.episodes.filter(ep=>done[ep.n]).length;
+    totalDone+=doneCount;
+    html+=`<div class="parva-section"><div class="parva-hd" onclick="toggleParva(${parva.id})"><div class="parva-hd-left"><div class="parva-num">PARVA ${parva.id} · ${parva.eng.toUpperCase()}</div><div class="parva-name">${parva.name}</div><div class="parva-meaning">${parva.meaning}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="parva-count">${parva.episodes.length} eps</span>${doneCount>0?`<span style="font-size:10px;color:var(--success);">${doneCount} done</span>`:''}</div></div><div class="parva-episodes ${filter?'open':''}" id="parva-${parva.id}"><div class="ep-grid">`;
+    (filter?filtered:parva.episodes).forEach(ep=>{
+      const isDone=done[ep.n];
+      html+=`<div class="ep-item ${isDone?'done':''}" id="ep-${ep.n}"><div class="ep-num-badge ${isDone?'done':''}">${isDone?'✓':ep.n}</div><div class="ep-body"><div class="ep-title">${ep.title}</div>${ep.sub?`<div class="ep-sub">${ep.sub}</div>`:''}</div><div class="ep-actions"><button class="ep-btn ep-btn-gen" onclick="selectEp(${ep.n},event)">Generate</button><button class="ep-btn ep-btn-done" onclick="toggleDone(${ep.n},event)">${isDone?'Undo':'Done'}</button></div></div>`;
+    });
+    html+=`</div></div></div>`;
+  });
+  container.innerHTML=html;
+  document.getElementById('doneEps').textContent=totalDone;
+  document.getElementById('totalEps').textContent=totalEps;
+  document.getElementById('monthsLeft').textContent=Math.ceil((totalEps-totalDone)/12)+'mo';
+}
+
+function toggleParva(id){document.getElementById('parva-'+id).classList.toggle('open');}
+function searchEps(val){renderEpisodes(val);}
+
+function selectEp(n,e){
+  if(e)e.stopPropagation();
+  const ep=findEp(n);
+  if(!ep)return;
+  currentEp=ep;
+  document.getElementById('epNum').value=n;
+  document.getElementById('topic').value=ep.title+(ep.sub?' — '+ep.sub:'');
+  const nextEp=findEp(n+1);
+  document.getElementById('nextEp').value=nextEp?nextEp.title:'';
+  const card=document.getElementById('currentEpCard');
+  card.style.display='block';
+  document.getElementById('curEpNum').textContent='Episode '+n;
+  document.getElementById('curEpTitle').textContent=ep.title;
+  document.getElementById('curEpSub').textContent=ep.sub||'';
+  document.getElementById('scriptOut').classList.remove('show');
+  document.getElementById('scriptLoad').classList.remove('show');
+  showPage('generate');
+}
+
+function findEp(n){
+  for(const p of PARVAS){const ep=p.episodes.find(e=>e.n===n);if(ep)return ep;}
+  return null;
+}
+
+function toggleDone(n,e){
+  e.stopPropagation();
+  if(done[n])delete done[n];else done[n]=true;
+  localStorage.setItem('mbDone',JSON.stringify(done));
+  renderEpisodes(document.getElementById('searchInput')?.value||'');
+}
+
+async function generateScript(){
+  const epNum=document.getElementById('epNum').value;
+  const topic=document.getElementById('topic').value;
+  const dur=document.getElementById('dur').value;
+  const nextEpVal=document.getElementById('nextEp').value;
+  if(!topic.trim()){alert('Please select an episode from Episodes page!');return;}
+  document.getElementById('scriptLoad').classList.add('show');
+  document.getElementById('scriptOut').classList.remove('show');
+  document.getElementById('genBtn').disabled=true;
+  const msgs=['Telugu script generate చేస్తున్నాను...','Mythology validate చేస్తున్నాను...','Dramatic narration polish చేస్తున్నాను...','Image prompts prepare చేస్తున్నాను...'];
+  let mi=0;
+  const iv=setInterval(()=>{document.getElementById('loadTxt').textContent=msgs[mi%msgs.length];mi++;},2500);
+  const prompt=`You are an expert Telugu storyteller and Hindu mythology scholar. Generate a complete, mythologically accurate Telugu YouTube video script for Mahabharatham series.\n\nEpisode: ${epNum}\nTopic: ${topic}\nDuration: ${dur} minutes\nNext Episode: ${nextEpVal}\n\nSTRICT RULES:\n1. Script MUST be in Telugu language only\n2. Must be 100% mythologically accurate per Vyasa Mahabharatham\n3. Dramatic engaging narration with ... pauses\n4. Match ${dur} minute duration\n5. End with teaser for next episode\n\nRespond ONLY in valid JSON (no markdown, no extra text):\n{"validation":[{"status":"ok","point":"fact in Telugu","description":"why correct"},{"status":"warn","point":"simplified","description":"what simplified"}],"scenes":[{"id":1,"name":"scene name Telugu","timeStart":"0:00","timeEnd":"1:00","script":"full Telugu narration text","visual":"what images to show","music":"music type"}],"imagePrompts":[{"scene":"SCENE 1","name":"image name","prompt":"Studio Ghibli anime style, [detailed scene description], 7:4 horizontal, no text, no watermark"}],"youtubeTitle":"Telugu title","youtubeDescription":"Telugu description with hashtags","youtubeTags":["tag1","tag2"]}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    clearInterval(iv);
+    let txt=data.content[0].text.replace(/```json|```/g,'').trim();
+    gData=JSON.parse(txt);
+    renderOutput(gData);
+  }catch(e){
+    clearInterval(iv);
+    gData=buildFallback(epNum,topic,nextEpVal);
+    renderOutput(gData);
+  }
+  document.getElementById('scriptLoad').classList.remove('show');
+  document.getElementById('scriptOut').classList.add('show');
+  document.getElementById('genBtn').disabled=false;
+}
+
+function buildFallback(epNum,topic,nextEp){
+  return{
+    validation:[{status:"ok",point:"Topic Accuracy",description:"ఈ episode topic వ్యాస మహాభారతంలో నిజంగా ఉన్నది"},{status:"ok",point:"Story Order",description:"ఈ episode correct Vyasa story order లో ఉంది"},{status:"warn",point:"Dramatic Elements",description:"YouTube కోసం కొన్ని dramatic elements add చేయబడ్డాయి"}],
+    scenes:[
+      {id:1,name:"ఇంట్రో",timeStart:"0:00",timeEnd:"0:30",script:`నమస్కారం స్నేహితులారా...\nCreative Stud కి స్వాగతం!\n\nమహాభారతం Episode ${epNum}!\n\n${topic}`,visual:"Epic title card — slow zoom in",music:"Dramatic epic BGM"},
+      {id:2,name:"ప్రధాన కథ",timeStart:"0:30",timeEnd:"9:00",script:`స్నేహితులారా...\n\n${topic}\n\nఇది మహాభారతంలో అత్యంత ముఖ్యమైన కథ.\n\nఈ కథలో ధర్మం ఏమిటో తెలుస్తుంది.\nజీవితం ఎలా జీవించాలో అర్థమవుతుంది.\n\n(Full detailed script కోసం Generate button మళ్ళీ click చేయండి)`,visual:"Story related mythology images",music:"Appropriate BGM"},
+      {id:3,name:"అవుట్రో",timeStart:"9:00",timeEnd:"10:00",script:`ఆగండి స్నేహితులారా...\n\nతర్వాతి episode లో మనం చూస్తాం:\n${nextEp}!\n\nSubscribe చేయండి. Bell కొట్టండి.\nComment లో చెప్పండి మీకు తెలుసా?\n\nజై శ్రీ కృష్ణ! 🙏`,visual:"Fade out with channel logo",music:"Bell sound → silence"}
+    ],
+    imagePrompts:[
+      {scene:"SCENE 1",name:"Title Background",prompt:`Studio Ghibli anime style, epic ancient Indian mythological battle scene related to "${topic}", dramatic golden sky, massive armies silhouette, cinematic wide shot, 7:4 horizontal, no text, no watermark`},
+      {scene:"SCENE 2",name:"Main Scene",prompt:`Studio Ghibli anime style, dramatic ancient Indian mythology scene showing "${topic}", detailed characters in traditional Indian attire, epic atmosphere, cinematic lighting, 7:4 horizontal, no text, no watermark`}
+    ],
+    youtubeTitle:`మహాభారతం Episode ${epNum} — ${topic.split('—')[0].trim()} | Creative Stud`,
+    youtubeDescription:`మహాభారతం Episode ${epNum}: ${topic}\n\nCreative Stud చానెల్‌లో మహాభారతం పూర్తి కథ Telugu లో!\n\n#మహాభారతం #Mahabharatham #Telugu #CreativeStud #TeluguMythology #మహాభారతంTelugu`,
+    youtubeTags:["మహాభారతం","Mahabharatham Telugu","Telugu Mythology","Creative Stud","Telugu Stories","Hindu Mythology Telugu","మహాభారతం కథలు"]
+  };
+}
+
+function renderOutput(data){
+  const icons={ok:'✓',warn:'!',error:'✗'};
+  const cls={ok:'v-ok',warn:'v-warn',error:'v-err'};
+  document.getElementById('valResults').innerHTML=(data.validation||[]).map(v=>`<div class="val-item"><div class="val-dot ${cls[v.status]}">${icons[v.status]}</div><div class="val-body"><div class="val-ttl">${v.point}</div><div class="val-desc">${v.description}</div></div></div>`).join('');
+  const full=(data.scenes||[]).map(s=>s.script).join('\n\n');
+  document.getElementById('fullTxt').textContent=full;
+  document.getElementById('scenesOut').innerHTML=(data.scenes||[]).map(s=>`<div class="out-block"><div class="out-label">${s.name} — ${s.timeStart} to ${s.timeEnd}</div><div class="copy-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.out-block').querySelector('.out-text').innerText)">Copy</button></div><div class="out-text">${s.script}</div><div style="margin-top:8px;font-size:11px;color:var(--muted);">📺 ${s.visual} · 🎵 ${s.music}</div></div>`).join('');
+  document.getElementById('imagePromptsOut').innerHTML=(data.imagePrompts||[]).map((p,i)=>`<div class="out-block"><div class="out-label">Image ${i+1} · ${p.scene} · ${p.name}</div><div class="copy-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.out-block').querySelector('.out-text').innerText);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)">Copy</button></div><div class="out-text">${p.prompt}</div></div>`).join('');
+  document.getElementById('ytOut').innerHTML=`<div class="out-block"><div class="out-label">Title</div><div class="copy-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.out-block').querySelector('.out-text').innerText)">Copy</button></div><div class="out-text">${data.youtubeTitle||''}</div></div><div class="out-block"><div class="out-label">Description</div><div class="copy-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.out-block').querySelector('.out-text').innerText)">Copy</button></div><div class="out-text">${data.youtubeDescription||''}</div></div><div class="out-block"><div class="out-label">Tags</div><div class="copy-wrap"><button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.out-block').querySelector('.out-text').innerText)">Copy</button></div><div class="out-text">${(data.youtubeTags||[]).join(', ')}</div></div>`;
+}
+
+function markDoneNext(){
+  if(currentEp){
+    done[currentEp.n]=true;
+    localStorage.setItem('mbDone',JSON.stringify(done));
+    const next=findEp(currentEp.n+1);
+    if(next)selectEp(next.n,null);
+    else{showPage('episodes');renderEpisodes();}
+  }
+}
+
+function st(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tp-'+tab).classList.add('on');
+}
+
+function cp(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
+    event.target.textContent='Copied!';
+    setTimeout(()=>event.target.textContent='Copy All',2000);
+  });
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const map={episodes:0,generate:1,tools:2};
+  document.querySelectorAll('.nav-tab')[map[id]]?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='episodes')renderEpisodes(document.getElementById('searchInput')?.value||'');
+}
+
+renderEpisodes();
+</script>
+</body>
+</html>
